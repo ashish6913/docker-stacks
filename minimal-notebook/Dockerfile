@@ -30,6 +30,16 @@ RUN apt-get update --yes && \
     texlive-fonts-recommended \
     texlive-plain-generic && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+    
+    
+# Provide password-less sudo to NB_USER
+RUN \
+    sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
+    sed -i /etc/sudoers -re 's/^root.*/root ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
+    sed -i /etc/sudoers -re 's/^#includedir.*/## **Removed the include directive** ##"/g' && \
+    echo "${NB_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \  
+    chmod g+w /etc/passwd
+
 
 # Create alternative for nano -> nano-tiny
 RUN update-alternatives --install /usr/bin/nano nano /bin/nano-tiny 10
